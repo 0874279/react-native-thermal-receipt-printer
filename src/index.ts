@@ -1,7 +1,8 @@
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 import * as EPToolkit from "./utils/EPToolkit";
-
+import BufferHelper from "./utils/buffer-helper";
+import { Buffer } from 'buffer'
 const RNUSBPrinter = NativeModules.RNUSBPrinter;
 const RNBLEPrinter = NativeModules.RNBLEPrinter;
 const RNNetPrinter = NativeModules.RNNetPrinter;
@@ -45,6 +46,14 @@ const textTo64Buffer = (text: string, opts: PrinterOptions) => {
   const buffer = EPToolkit.exchange_text(text, options);
   return buffer.toString("base64");
 };
+
+const bytesToString = (data: Uint8Array, type: 'base64' | 'hex') => {
+  const bytes = new BufferHelper()
+  bytes.concat(Buffer.from(data))
+  const buffer = bytes.toBuffer()
+  return buffer.toString(type)
+}
+
 
 const billTo64Buffer = (text: string, opts: PrinterOptions) => {
   const defaultOptions = {
@@ -254,6 +263,28 @@ export const NetPrinter = {
       );
     }
   },
+
+  printRawData: (data: Uint8Array, onError: (error: Error) => void = () => {}) => {
+    if (Platform.OS === "ios") {
+      const processedText = bytesToString(data, 'hex');
+      RNNetPrinter.printHex(
+        processedText,
+        { beep: true, cut: true },
+        (error: Error) => {
+          if(onError) {
+            onError(error)
+          }
+        }
+      );
+    } else {
+      RNNetPrinter.printRawData(bytesToString(data, 'base64'), (error: Error) => {
+        if(onError) {
+          onError(error)
+        }
+      }      
+      );
+    }
+  }
 };
 
 export const NetPrinterEventEmitter = new NativeEventEmitter(RNNetPrinter);
