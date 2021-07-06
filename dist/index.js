@@ -99,6 +99,24 @@ export var USBPrinter = {
             return console.warn(error);
         });
     },
+    printRawData: function (data, onError) {
+        if (onError === void 0) { onError = function () { }; }
+        if (Platform.OS === "ios") {
+            var processedText = bytesToString(data, 'hex');
+            RNUSBPrinter.printHex(processedText, { beep: true, cut: true }, function (error) {
+                if (onError) {
+                    onError(error);
+                }
+            });
+        }
+        else {
+            RNUSBPrinter.printRawData(bytesToString(data, 'base64'), function (error) {
+                if (onError) {
+                    onError(error);
+                }
+            });
+        }
+    }
 };
 export var BLEPrinter = {
     init: function () {
@@ -146,6 +164,24 @@ export var BLEPrinter = {
             });
         }
     },
+    printRawData: function (data, onError) {
+        if (onError === void 0) { onError = function () { }; }
+        if (Platform.OS === "ios") {
+            var processedText = bytesToString(data, 'hex');
+            RNBLEPrinter.printHex(processedText, { beep: true, cut: true }, function (error) {
+                if (onError) {
+                    onError(error);
+                }
+            });
+        }
+        else {
+            RNBLEPrinter.printRawData(bytesToString(data, 'base64'), function (error) {
+                if (onError) {
+                    onError(error);
+                }
+            });
+        }
+    }
 };
 export var NetPrinter = {
     init: function () {

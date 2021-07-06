@@ -26,6 +26,7 @@ export declare const USBPrinter: {
     closeConn: () => Promise<void>;
     printText: (text: string, opts?: PrinterOptions) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
+    printRawData: (data: Uint8Array, onError?: (error: Error) => void) => void;
 };
 export declare const BLEPrinter: {
     init: () => Promise<void>;
@@ -34,6 +35,7 @@ export declare const BLEPrinter: {
     closeConn: () => Promise<void>;
     printText: (text: string, opts?: PrinterOptions) => void;
     printBill: (text: string, opts?: PrinterOptions) => void;
+    printRawData: (data: Uint8Array, onError?: (error: Error) => void) => void;
 };
 export declare const NetPrinter: {
     init: () => Promise<void>;
